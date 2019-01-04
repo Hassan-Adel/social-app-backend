@@ -29,6 +29,7 @@ namespace SocialApp.API
         {
             services.AddDbContext<ApplicationDBContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddCors();
         }
 
