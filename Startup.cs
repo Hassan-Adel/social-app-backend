@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SocialApp.API.Data;
+using SocialApp.API.Helpers;
 
 namespace SocialApp.API
 {
@@ -67,6 +68,7 @@ namespace SocialApp.API
                         var error = httpContext.Features.Get<IExceptionHandlerFeature>();
                         if(error != null)
                         {
+                            httpContext.Response.AddApplicationError(error.Error.Message);
                             await httpContext.Response.WriteAsync(error.Error.Message);
                         }
                     });
