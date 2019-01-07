@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -56,6 +59,18 @@ namespace SocialApp.API
             }
             else
             {
+                app.UseExceptionHandler(builder =>
+                {
+                    builder.Run(async httpContext =>
+                    {
+                        httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        var error = httpContext.Features.Get<IExceptionHandlerFeature>();
+                        if(error != null)
+                        {
+                            await httpContext.Response.WriteAsync(error.Error.Message);
+                        }
+                    });
+                });
                 //app.UseHsts();
             }
             app.UseCors(p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
