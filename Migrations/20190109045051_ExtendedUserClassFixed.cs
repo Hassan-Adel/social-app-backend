@@ -59,7 +59,12 @@ namespace SocialApp.API.Migrations
                 name: "LookingFor",
                 table: "Users",
                 nullable: true);
-
+            /*
+             * now if a user is deleted then the photos would be deleted as well.
+             * So this is how we want our database to look.
+             * UserId = table.Column<int>(nullable: false)
+             * onDelete: ReferentialAction.Cascade);
+             */
             migrationBuilder.CreateTable(
                 name: "Photos",
                 columns: table => new
