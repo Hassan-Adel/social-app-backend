@@ -59,7 +59,17 @@ namespace SocialApp.API.Migrations
                 name: "LookingFor",
                 table: "Users",
                 nullable: true);
-
+            /*
+             * onDelete: ReferentialAction.Restrict):
+             * Now this refers to what should I do with my photos.
+                If the user is deleted and by default entity framework has said.
+                I'm going to restrict deletions.
+                So in the event the user is deleted then the photos would remain as it's been set up.
+                And if a user is deleted then this user I.D. would be set to NULL but the photos would sort of be left
+                hanging around in an orphaned state.
+                And this is not the behaviour we're looking for.
+                In the event the user was deleted then we would also want our photos for light user to also be deleted
+             */
             migrationBuilder.CreateTable(
                 name: "Photos",
                 columns: table => new
