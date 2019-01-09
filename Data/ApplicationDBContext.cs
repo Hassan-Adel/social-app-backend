@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace SocialApp.API.Data
 {
+    /**
+     * After Updating ApplicationDBContext
+     * 1- Add-Migration "Migration Name"
+     * 2- Update-Database
+     */
     public class ApplicationDBContext : DbContext
     {
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base (options) { }
