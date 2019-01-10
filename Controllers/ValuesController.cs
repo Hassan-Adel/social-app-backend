@@ -23,9 +23,9 @@ namespace SocialApp.API.Controllers
         // GET api/values
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetValues()
+        public  IActionResult GetValues()
         {
-            var values =await _context.Values.ToListAsync();
+            var values = _context.Values.ToListAsync();
             return Ok(values);
         }
 
