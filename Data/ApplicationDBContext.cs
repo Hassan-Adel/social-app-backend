@@ -11,6 +11,7 @@ namespace SocialApp.API.Data
      * After Updating ApplicationDBContext
      * 1- Add-Migration "Migration Name"
      * 2- Update-Database
+     * 3- Remove-Migration (to remove latest migration)
      */
     public class ApplicationDBContext : DbContext
     {
