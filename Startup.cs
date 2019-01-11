@@ -37,6 +37,7 @@ namespace SocialApp.API
             services.AddDbContext<ApplicationDBContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<ISocialRepository, SocialRepository>();
             services.AddCors();
             services.AddTransient<Seed>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
@@ -76,7 +77,7 @@ namespace SocialApp.API
                 });
                 //app.UseHsts();
             }
-            seeder.SeedUsers();
+            //seeder.SeedUsers();
             app.UseCors(p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             //app.UseHttpsRedirection();
             app.UseAuthentication();
