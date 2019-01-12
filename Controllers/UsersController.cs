@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.API.Data;
+using SocialApp.API.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace SocialApp.API.Controllers
         public async Task<IActionResult> GetUsers()
         {
             var users = await _repo.GetUsers();
+            var usersToReturn = _mapper.Map<IEnumerable<UserForListDTO>>(users);
             return Ok(users);
         }
 
@@ -36,7 +38,10 @@ namespace SocialApp.API.Controllers
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await _repo.GetUser(id);
-            return Ok(user);
+
+            var userToReturn = _mapper.Map<UserForDetailedDTO>(user);
+
+            return Ok(userToReturn);
         }
 
     }
