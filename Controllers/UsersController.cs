@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.API.Data;
 using System;
@@ -14,9 +15,12 @@ namespace SocialApp.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ISocialRepository _repo;
-        public UsersController(ISocialRepository repo)
+        private readonly IMapper _mapper;
+
+        public UsersController(ISocialRepository repo, IMapper mapper)
         {
             _repo = repo;
+            _mapper = mapper;
         }
 
         // GET api/users

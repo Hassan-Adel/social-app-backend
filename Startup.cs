@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -44,6 +45,7 @@ namespace SocialApp.API
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<ISocialRepository, SocialRepository>();
             services.AddCors();
+            services.AddAutoMapper();
             services.AddTransient<Seed>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 options =>
