@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SocialApp.API.DTOs
 {
-    public class UserForDetailed
+    public class UserForDetailedDTO
     {
         public int Id { get; set; }
         public string Username { get; set; }
