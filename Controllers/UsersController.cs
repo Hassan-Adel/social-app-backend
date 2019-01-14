@@ -30,7 +30,7 @@ namespace SocialApp.API.Controllers
         {
             var users = await _repo.GetUsers();
             var usersToReturn = _mapper.Map<IEnumerable<UserForListDTO>>(users);
-            return Ok(users);
+            return Ok(usersToReturn);
         }
 
         // GET api/user/id
