@@ -45,6 +45,9 @@ namespace SocialApp.API
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<ISocialRepository, SocialRepository>();
             services.AddCors();
+            //Getthe section cloudinary settings and now the values for the properties
+            //inside the cloudinary settings are going to match what's inside our appSettings.Json File 
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper();
             services.AddTransient<Seed>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
