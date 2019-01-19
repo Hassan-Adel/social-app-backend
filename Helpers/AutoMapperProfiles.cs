@@ -33,6 +33,7 @@ namespace SocialApp.API.Helpers
                 });
 
             CreateMap<Photo, PhotosForDetailedDTO>();
+            CreateMap<UserForUpdateDTO, User>();
         }
     }
 }
