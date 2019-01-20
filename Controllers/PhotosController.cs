@@ -49,10 +49,13 @@ namespace SocialApp.API.Controllers
         }
 
         // GET: api/Photos/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        [HttpGet("{id}", Name = "GetPhoto")]
+        public async Task<IActionResult> GetPhoto(int id)
         {
-            return "value";
+            var photoFromRepo = await _repo.GetPhoto(id);
+            //Because we don't want to return everything from our photoFromRepo
+            var photo = _mapper.Map<PhotosForReturnDTO>(photoFromRepo);
+            return Ok(photo);
         }
 
         // POST: api/Photos
@@ -96,8 +99,12 @@ namespace SocialApp.API.Controllers
 
             //Save photo
             userFromRepo.Photos.Add(photo);
+
             if (await _repo.SaveAll())
-                return Ok();
+            {
+                var photoToReturn = _mapper.Map<PhotosForReturnDTO>(photo);
+                return CreatedAtRoute("GetPhoto", new { id = photo.Id }, photoToReturn); // Http post should return created at route (201)
+            }
 
             return BadRequest("Could not add the photo");
         }
