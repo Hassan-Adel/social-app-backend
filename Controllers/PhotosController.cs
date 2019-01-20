@@ -55,7 +55,52 @@ namespace SocialApp.API.Controllers
             return "value";
         }
 
-        
+        // POST: api/Photos
+        [HttpPost]
+        public async Task<IActionResult> AddPhotoForUser(int userId, PhotosForCreationDTO photosForCreationDTO)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+
+            var userFromRepo = await _repo.GetUser(userId);
+
+            var file = photosForCreationDTO.File;
+
+            //Store result returned from cloudinary
+            var uploadResults = new ImageUploadResult();
+
+            //And if the file's length > 0 then will read this file into memory.
+            //Because this is going to be a file stream we'll use using so that we can dispose of what the file inside memory
+            //once we've completed this method.
+            if (file.Length > 0)
+            {
+                using(var stream = file.OpenReadStream())
+                {
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(file.Name, stream),
+                        //Crop the image arround the user's face
+                        Transformation = new Transformation().Width(500).Height(500).Crop("fill").Gravity("face")
+                    };
+                    uploadResults = _cloudinary.Upload(uploadParams);
+                }
+            }
+            photosForCreationDTO.Url = uploadResults.Uri.ToString();
+            photosForCreationDTO.PublicId = uploadResults.PublicId;
+
+            var photo = _mapper.Map<Photo>(photosForCreationDTO);
+
+            //If the user doesn't have a main photo set isMain to true
+            if (!userFromRepo.Photos.Any(p => p.IsMain))
+                photo.IsMain = true;
+
+            //Save photo
+            userFromRepo.Photos.Add(photo);
+            if (await _repo.SaveAll())
+                return Ok();
+
+            return BadRequest("Could not add the photo");
+        }
 
         // PUT: api/Photos/5
         [HttpPut("{id}")]
