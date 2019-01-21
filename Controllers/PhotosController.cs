@@ -60,7 +60,7 @@ namespace SocialApp.API.Controllers
 
         // POST: api/Photos
         [HttpPost]
-        public async Task<IActionResult> AddPhotoForUser(int userId, PhotosForCreationDTO photosForCreationDTO)
+        public async Task<IActionResult> AddPhotoForUser(int userId, [FromForm] PhotosForCreationDTO photosForCreationDTO)
         {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
