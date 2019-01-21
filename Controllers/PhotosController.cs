@@ -109,6 +109,34 @@ namespace SocialApp.API.Controllers
             return BadRequest("Could not add the photo");
         }
 
+        // POST: Set the isMain property of the photo to true
+        [HttpPost("{id}/setMain")]
+        public async Task<IActionResult> SetMainPhoto(int userId, int id)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+            var user = await _repo.GetUser(userId);
+
+            if (!user.Photos.Any(p => p.Id == id))
+                return Unauthorized();
+
+            var photoFromRepo = await _repo.GetPhoto(id);
+
+            if (photoFromRepo.IsMain)
+                return BadRequest("This photo is already the main photo");
+
+            //Reset the current main photo to false
+            var currentMainPhoto = await _repo.GetMainPhotoForUser(userId);
+            currentMainPhoto.IsMain = false;
+
+            photoFromRepo.IsMain = true;
+
+            if (await _repo.SaveAll())
+                return NoContent();
+
+            return BadRequest("Could not set photo to main");
+        }
+
         // PUT: api/Photos/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
