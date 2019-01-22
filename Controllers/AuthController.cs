@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,10 +22,13 @@ namespace SocialApp.API.Controllers
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
-        public AuthController(IAuthRepository repo, IConfiguration config)
+        private readonly IMapper _mapper;
+
+        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
         {
             _repo = repo;
             _config = config;
+            _mapper = mapper;
         }
 
         // GET api/values
@@ -80,8 +84,11 @@ namespace SocialApp.API.Controllers
             var toKenHandler = new JwtSecurityTokenHandler();
 
             var token = toKenHandler.CreateToken(tokenDescriptor);
+            // Send back some of the user properties that will be saved in the local storage & used by the SPA
+            var user = _mapper.Map<UserForLocalStorageDTO>(userFromRepo);
             return Ok(new {
-                token = toKenHandler.WriteToken(token)
+                token = toKenHandler.WriteToken(token),
+                user
             });
         }
 
