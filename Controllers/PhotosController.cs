@@ -145,8 +145,43 @@ namespace SocialApp.API.Controllers
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> DeletePhoto(int userId, int id)
         {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+            var user = await _repo.GetUser(userId);
+
+            if (!user.Photos.Any(p => p.Id == id))
+                return Unauthorized();
+
+            var photoFromRepo = await _repo.GetPhoto(id);
+
+            if (photoFromRepo.IsMain)
+                return BadRequest("You can't delete the main photo");
+
+            //If the hoto is stored in cloudinary
+            if(photoFromRepo.PublicId != null){
+                //Delete photo from Cloudinary
+                var deleteParams = new DeletionParams(photoFromRepo.PublicId);
+                var result = _cloudinary.Destroy(deleteParams);
+
+                if (result.Result == "ok")
+                {
+                    //Delete from DB
+                    _repo.Delete(photoFromRepo);
+                }
+            }
+            
+            if(photoFromRepo.PublicId == null)
+            {
+                //Delete from DB
+                _repo.Delete(photoFromRepo);
+            }
+
+            if (await _repo.SaveAll())
+                return Ok();
+
+            return BadRequest("Failed to delete the photo");
         }
     }
 }
