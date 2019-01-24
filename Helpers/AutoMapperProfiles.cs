@@ -47,6 +47,7 @@ namespace SocialApp.API.Helpers
             CreateMap<UserForUpdateDTO, User>();
             CreateMap<Photo, PhotosForReturnDTO>();
             CreateMap<PhotosForCreationDTO, Photo>();
+            CreateMap<UserForRegisterDTO, User>();
         }
     }
 }
