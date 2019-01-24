@@ -35,7 +35,7 @@ namespace SocialApp.API.Controllers
         }
 
         // GET api/user/id
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetUser")]
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await _repo.GetUser(id);

@@ -44,10 +44,12 @@ namespace SocialApp.API.Controllers
             if (await _repo.UserExists(userForRegisterDTO.Username))
                 return BadRequest("Username already exists");
 
-            var userToCreate = new User { Username = userForRegisterDTO.Username };
+            var userToCreate = _mapper.Map<User>(userForRegisterDTO);
             var createdUser = await _repo.Register(userToCreate, userForRegisterDTO.Password);
-            
-            return StatusCode(201);
+            var userToReturn = _mapper.Map<UserForDetailedDTO>(createdUser);
+            // we need to return a created at root so that we send back a location header with the requests as well as the new resource that we've created.
+            // root name, root values, returned object
+            return CreatedAtRoute("GetUser", new { controller = "Users", id = createdUser.Id}, userToReturn);
         }
 
         // we don't need [FromBody] as it's already being added by the [ApiController]
