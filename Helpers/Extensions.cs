@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,15 @@ namespace SocialApp.API.Helpers
             response.Headers.Add("Access-Control-Expose-Headers", "Application-Error");
             response.Headers.Add("Access-Control-Allow-Origin", "*");
         }
+
+        public static void AddPaginationHeaders(this HttpResponse response, int currentPage, int itemsPerPage, int totalItems, int totalPages)
+        {
+            var paginationHeader = new PaginationHeader(currentPage, itemsPerPage, totalItems, totalPages);
+            response.Headers.Add("Paginationr", JsonConvert.SerializeObject(paginationHeader)); // returns Json string
+            //we'll add the CORS header so that the angular application doesn't compliain about it because it doesn't have the appropriate access control allow origin.
+            response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
+        }
+
         /*
          *  But this isn't going to give us an accurate age because depending on the time of year it is. and it depends
             if the users already had their birthday.
