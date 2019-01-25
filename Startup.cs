@@ -61,6 +61,8 @@ namespace SocialApp.API
                         ValidateAudience = false
                     };
                 });
+            // AddScoped: Because we need an instance of this per request
+            services.AddScoped<LogUserActivity>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
