@@ -27,7 +27,7 @@ namespace SocialApp.API.Helpers
             var camelCaseFormatter = new JsonSerializerSettings();
             camelCaseFormatter.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-            response.Headers.Add("Paginationr", JsonConvert.SerializeObject(paginationHeader, camelCaseFormatter)); // returns Json string
+            response.Headers.Add("Pagination", JsonConvert.SerializeObject(paginationHeader, camelCaseFormatter)); // returns Json string
 
             //we'll add the CORS header so that the angular application doesn't compliain about it because it doesn't have the appropriate access control allow origin.
             response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
