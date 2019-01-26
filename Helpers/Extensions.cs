@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,13 @@ namespace SocialApp.API.Helpers
         public static void AddPaginationHeaders(this HttpResponse response, int currentPage, int itemsPerPage, int totalItems, int totalPages)
         {
             var paginationHeader = new PaginationHeader(currentPage, itemsPerPage, totalItems, totalPages);
-            response.Headers.Add("Paginationr", JsonConvert.SerializeObject(paginationHeader)); // returns Json string
+
+            // return object names as camel cased
+            var camelCaseFormatter = new JsonSerializerSettings();
+            camelCaseFormatter.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            response.Headers.Add("Paginationr", JsonConvert.SerializeObject(paginationHeader, camelCaseFormatter)); // returns Json string
+
             //we'll add the CORS header so that the angular application doesn't compliain about it because it doesn't have the appropriate access control allow origin.
             response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
         }
