@@ -37,7 +37,7 @@ namespace SocialApp.API.Data
         {
             // This Query will not get excutd here but in the PagedList after filteration
             //AsQueryable : to add to the query
-            var users = _context.Users.Include(db_user => db_user.Photos).AsQueryable();
+            var users = _context.Users.Include(db_user => db_user.Photos).OrderByDescending(u => u.LastActive).AsQueryable();
             users = users.Where(u => u.Id != userParams.UserId);
             users = users.Where(u => u.Gender == userParams.Gender);
             if(userParams.MinAge != 18 || userParams.MaxAge != 99)
@@ -48,6 +48,19 @@ namespace SocialApp.API.Data
                 var minDateOfBirth = DateTime.Today.AddYears(-userParams.MaxAge - 1);
                 var maxDateOfBirth = DateTime.Today.AddYears(-userParams.MinAge - 1);
                 users = users.Where(u => u.DateOfBirth >= minDateOfBirth && u.DateOfBirth <= maxDateOfBirth);
+            }
+
+            if (!string.IsNullOrEmpty(userParams.OrderBy))
+            {
+                switch (userParams.OrderBy)
+                {
+                    case "created":
+                        users = users.OrderByDescending(u => u.Created);
+                        break;
+                    default:
+                        users = users.OrderByDescending(u => u.LastActive);
+                        break;
+                }
             }
             return await  PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
