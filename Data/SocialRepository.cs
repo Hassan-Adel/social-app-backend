@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SocialApp.API.Helpers;
 using SocialApp.API.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,6 +40,15 @@ namespace SocialApp.API.Data
             var users = _context.Users.Include(db_user => db_user.Photos).AsQueryable();
             users = users.Where(u => u.Id != userParams.UserId);
             users = users.Where(u => u.Gender == userParams.Gender);
+            if(userParams.MinAge != 18 || userParams.MaxAge != 99)
+            {
+                //even though we're adding years what we effectively want to do is minus the number of years from today
+                //based on the maximum Age the user is looking for.
+                //Because then this will be the minimum date of birth that we're looking for.
+                var minDateOfBirth = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+                var maxDateOfBirth = DateTime.Today.AddYears(-userParams.MinAge - 1);
+                users = users.Where(u => u.DateOfBirth >= minDateOfBirth && u.DateOfBirth <= maxDateOfBirth);
+            }
             return await  PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
 
