@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SocialApp.API.Helpers;
 using SocialApp.API.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,10 +31,11 @@ namespace SocialApp.API.Data
             return user;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            var users = await _context.Users.Include(db_user => db_user.Photos).ToListAsync();
-            return users;
+            // This Query will not get excutd here but in the PagedList after filteration
+            var users = _context.Users.Include(db_user => db_user.Photos);
+            return await  PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<Photo> GetPhoto(int id)
