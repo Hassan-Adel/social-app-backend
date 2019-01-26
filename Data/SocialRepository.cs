@@ -28,13 +28,17 @@ namespace SocialApp.API.Data
         public async Task<User> GetUser(int id)
         {
             var user = await _context.Users.Include(db_user => db_user.Photos).FirstOrDefaultAsync(u => u.Id == id);
+
             return user;
         }
 
         public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
             // This Query will not get excutd here but in the PagedList after filteration
-            var users = _context.Users.Include(db_user => db_user.Photos);
+            //AsQueryable : to add to the query
+            var users = _context.Users.Include(db_user => db_user.Photos).AsQueryable();
+            users = users.Where(u => u.Id != userParams.UserId);
+            users = users.Where(u => u.Gender == userParams.Gender);
             return await  PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
 

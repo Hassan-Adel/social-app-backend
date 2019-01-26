@@ -31,8 +31,15 @@ namespace SocialApp.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsers([FromQuery] UserParams userParams)
         {
+            var currenUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userFromrepo = await _repo.GetUser(currenUserId);
+            userParams.UserId = currenUserId;
             // users : a PagedList<User> object
             var users = await _repo.GetUsers(userParams);
+            if (string.IsNullOrEmpty(userParams.Gender))
+            {
+                userParams.Gender = (userFromrepo.Gender == "male") ? "female" : "male";
+            }
             var usersToReturn = _mapper.Map<IEnumerable<UserForListDTO>>(users);
             // We Added an extension method to the response to add the pagination headers
             Response.AddPaginationHeaders(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);

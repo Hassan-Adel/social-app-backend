@@ -20,6 +20,8 @@ namespace SocialApp.API.Helpers
             get { return pageSize; }
             set { pageSize = (value > MaxPagSize) ? MaxPagSize : value; }
         }
+        public int UserId { get; set; }
+        public string Gender{ get; set; }
 
     }
 }
