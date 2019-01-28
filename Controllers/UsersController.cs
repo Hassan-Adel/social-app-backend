@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SocialApp.API.Data;
 using SocialApp.API.DTOs;
 using SocialApp.API.Helpers;
+using SocialApp.API.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,6 +77,38 @@ namespace SocialApp.API.Controllers
 
             throw new Exception($"Updating user {id} failed on Save");
         }
+
+        [HttpGet("{id}/like/{recipientId}")]
+        public async Task<IActionResult> LikeUser(int id, int recipientId)
+        {
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+
+            var like = await _repo.GetLike(id, recipientId);
+
+            if (like != null)
+                return BadRequest("You already like this user");
+
+            if (await _repo.GetUser(recipientId) == null)
+                return NotFound();
+
+            if (id == recipientId)
+                return BadRequest("You cannot like yourself");
+
+            like = new Like
+            {
+                LikerId = id,
+                LikeeId = recipientId
+            };
+
+            _repo.Add<Like>(like);
+
+            if (await _repo.SaveAll())
+                return Ok();
+
+            return BadRequest("Failed to like user");
+        }
+
 
     }
 }
