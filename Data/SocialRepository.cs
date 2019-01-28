@@ -40,7 +40,22 @@ namespace SocialApp.API.Data
             var users = _context.Users.Include(db_user => db_user.Photos).OrderByDescending(u => u.LastActive).AsQueryable();
             users = users.Where(u => u.Id != userParams.UserId);
             users = users.Where(u => u.Gender == userParams.Gender);
-            if(userParams.MinAge != 18 || userParams.MaxAge != 99)
+
+            if (userParams.Likers)
+            {
+                var userLikers = await GetUserLikes(userParams.UserId, userParams.Likers);
+                users = users.Where(u => userLikers.Contains(u.Id));
+            }
+
+            if (userParams.Likees)
+            {
+                // We're using the same bool (userParams.Likers) because if it's false we'll return the likees
+                var userLikees = await GetUserLikes(userParams.UserId, userParams.Likers);
+                users = users.Where(u => userLikees.Contains(u.Id));
+
+            }
+
+            if (userParams.MinAge != 18 || userParams.MaxAge != 99)
             {
                 //even though we're adding years what we effectively want to do is minus the number of years from today
                 //based on the maximum Age the user is looking for.
@@ -63,6 +78,22 @@ namespace SocialApp.API.Data
                 }
             }
             return await  PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
+        }
+
+        // loogedIn user Id , bool Likers or Likees
+        private async Task<IEnumerable<int>> GetUserLikes(int id, bool likers)
+        {
+            var user = await _context.Users.Include(db_user => db_user.Likers).Include(db_user => db_user.Likees).FirstOrDefaultAsync(u => u.Id == id);
+            // Get users who liked the current user
+            if (likers)
+            {
+                return user.Likers.Where(u => u.LikeeId == id).Select(i => i.LikerId);
+            }
+            // Get the users who the current user has liked 
+            else
+            {
+                return user.Likees.Where(u => u.LikerId == id).Select(i => i.LikeeId);
+            }
         }
 
         public async Task<Photo> GetPhoto(int id)
