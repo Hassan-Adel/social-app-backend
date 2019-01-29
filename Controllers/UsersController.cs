@@ -78,7 +78,7 @@ namespace SocialApp.API.Controllers
             throw new Exception($"Updating user {id} failed on Save");
         }
 
-        [HttpGet("{id}/like/{recipientId}")]
+        [HttpPost("{id}/like/{recipientId}")]
         public async Task<IActionResult> LikeUser(int id, int recipientId)
         {
             if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
