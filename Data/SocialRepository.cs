@@ -116,9 +116,9 @@ namespace SocialApp.API.Data
             return await _context.Likes.FirstOrDefaultAsync(u => u.LikerId == userId && u.LikeeId == recipientId);
         }
 
-        public Task<Message> GetMessage(int id)
+        public async Task<Message> GetMessage(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Messages.FirstOrDefaultAsync(m => m.Id == id);
         }
 
         public Task<PagedList<Message>> GetMessagesForUser()
