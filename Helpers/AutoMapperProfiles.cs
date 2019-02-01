@@ -48,7 +48,7 @@ namespace SocialApp.API.Helpers
             CreateMap<Photo, PhotosForReturnDTO>();
             CreateMap<PhotosForCreationDTO, Photo>();
             CreateMap<UserForRegisterDTO, User>();
-            CreateMap<MessageForCreationDTO, Message>();
+            CreateMap<MessageForCreationAndReturnDTO, Message>().ReverseMap();
         }
     }
 }
