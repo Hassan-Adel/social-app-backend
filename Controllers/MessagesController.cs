@@ -45,7 +45,7 @@ namespace SocialApp.API.Controllers
 
         //
         [HttpPost]
-        public async Task<IActionResult> CreateMessage(int userId, MessageForCreationDTO messageForCreationDTO)
+        public async Task<IActionResult> CreateMessage(int userId, MessageForCreationAndReturnDTO messageForCreationDTO)
         {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
@@ -60,8 +60,10 @@ namespace SocialApp.API.Controllers
 
             _repo.Add(message);
 
+            var messageToReturn = _mapper.Map<MessageForCreationAndReturnDTO>(message);
+
             if (await _repo.SaveAll())
-                return CreatedAtRoute("GetMessage", new { id = message.Id }, message);
+                return CreatedAtRoute("GetMessage", new { id = message.Id }, messageToReturn);
 
             throw new Exception("Creating the message failedon save");
 
