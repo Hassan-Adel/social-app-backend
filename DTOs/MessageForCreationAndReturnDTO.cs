@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace SocialApp.API.DTOs
 {
-    public class MessageForCreationDTO
+    public class MessageForCreationAndReturnDTO
     {
         public int SenderId { get; set; }
         public int RecipientId { get; set; }
         public string Content { get; set; }
         public DateTime MessageSent { get; set; }
-        public MessageForCreationDTO()
+        public MessageForCreationAndReturnDTO()
         {
             MessageSent = DateTime.Now;
         }
