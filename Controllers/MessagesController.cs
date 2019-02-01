@@ -27,12 +27,31 @@ namespace SocialApp.API.Controllers
             _repo = repo;
             _mapper = mapper;
         }
-        
+
+        // GET (userId Coms from route)
+        [HttpGet]
+        public async Task<IActionResult> GetMessagesForUser(int userId,[FromQuery] MessageParams messageParams)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+
+            messageParams.UserId = userId;
+
+            var messagesFromRepo = await _repo.GetMessagesForUser(messageParams);
+
+            var messages = _mapper.Map<IEnumerable<MessageToReturnDTO>>(messagesFromRepo);
+
+            // We Added an extension method to the response to add the pagination headers
+            Response.AddPaginationHeaders(messagesFromRepo.CurrentPage, messagesFromRepo.PageSize, messagesFromRepo.TotalCount, messagesFromRepo.TotalPages);
+
+            return Ok(messages);
+        }
+
         // GET /id
         [HttpGet("{id}", Name = "GetMessage")]
-        public async Task<IActionResult> GetMessage(int id)
+        public async Task<IActionResult> GetMessage(int userId, int id)
         {
-            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
             var messageFromRepo = await _repo.GetMessage(id);
