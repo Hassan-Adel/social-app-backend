@@ -21,6 +21,6 @@ namespace SocialApp.API.Helpers
             set { pageSize = (value > MaxPagSize) ? MaxPagSize : value; }
         }
         public int UserId { get; set; }
-        public string MessageCcontainer { get; set; } = "Unread";
+        public string MessageContainer { get; set; } = "Unread";
     }
 }
