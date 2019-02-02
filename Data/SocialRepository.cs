@@ -151,8 +151,10 @@ namespace SocialApp.API.Data
             var messages = await _context.Messages
                 .Include(u => u.Sender).ThenInclude(p => p.Photos)
                 .Include(u => u.Recipient).ThenInclude(p => p.Photos)
-                .Where(m => m.RecipientId == userId && m.SenderId == recipientId
-                || m.RecipientId == userId && m.SenderId == userId)
+                .Where(m => m.RecipientId == userId && m.RecipientDeleted == false
+                    && m.SenderId == recipientId
+                    || m.RecipientId == recipientId && m.SenderId == userId
+                    && m.SenderDeleted == false)
                 .OrderByDescending(m => m.MessageSent)
                 .ToListAsync();
 
