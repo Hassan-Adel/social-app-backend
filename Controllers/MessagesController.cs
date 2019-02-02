@@ -79,7 +79,7 @@ namespace SocialApp.API.Controllers
 
         //
         [HttpPost]
-        public async Task<IActionResult> CreateMessage(int userId, MessageForCreationAndReturnDTO messageForCreationDTO)
+        public async Task<IActionResult> CreateMessage(int userId, MessageForCreationDTO messageForCreationDTO)
         {
             var sender = await _repo.GetUser(userId);
 
