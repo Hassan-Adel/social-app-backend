@@ -94,14 +94,6 @@ namespace SocialApp.API.Controllers
             });
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetValue(int id)
-        {
-            
-            return Ok();
-        }
-
         // POST api/values
         [HttpPost]
         public void Post([FromBody] string value)
