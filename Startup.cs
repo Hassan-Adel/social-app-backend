@@ -93,6 +93,8 @@ namespace SocialApp.API
             app.UseCors(p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             //app.UseHttpsRedirection();
             app.UseAuthentication();
+            app.UseDefaultFiles(); // to look for index.html
+            app.UseStaticFiles(); // will look inside the wwwroot folder
             app.UseMvc();
         }
     }
