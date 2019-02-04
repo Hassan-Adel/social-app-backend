@@ -95,7 +95,13 @@ namespace SocialApp.API
             app.UseAuthentication();
             app.UseDefaultFiles(); // to look for index.html
             app.UseStaticFiles(); // will look inside the wwwroot folder
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapSpaFallbackRoute(
+                    name: "spa-fallback",
+                    defaults: new {controller = "Fallback", action = "index"}
+                    );
+            });
         }
     }
 }
