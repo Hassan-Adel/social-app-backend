@@ -28,7 +28,7 @@ namespace SocialApp.API.Controllers
             _mapper = mapper;
         }
 
-        // GET (userId Coms from route)
+        // GET (userId Comes from route)
         [HttpGet]
         public async Task<IActionResult> GetMessagesForUser(int userId,[FromQuery] MessageParams messageParams)
         {
@@ -48,7 +48,7 @@ namespace SocialApp.API.Controllers
         }
 
         // Add thread to the path so .NetCore would know the difference between this and the other Get
-        // GET (userId Coms from route)
+        // GET (userId Comes from route)
         [HttpGet("thread/{recipientId}")]
         public async Task<IActionResult> GetMessageThread(int userId, int recipientId)
         {
@@ -77,7 +77,7 @@ namespace SocialApp.API.Controllers
             return Ok(messageFromRepo);
         }
 
-        //
+        
         [HttpPost]
         public async Task<IActionResult> CreateMessage(int userId, MessageForCreationDTO messageForCreationDTO)
         {
@@ -102,7 +102,7 @@ namespace SocialApp.API.Controllers
                 return CreatedAtRoute("GetMessage", new { id = message.Id }, messageToReturn);
             }                
 
-            throw new Exception("Creating the message failedon save");
+            throw new Exception("Creating the message failed on save");
 
         }
 
