@@ -9,15 +9,14 @@ using SocialApp.API.Data;
 namespace SocialApp.API.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20190204163930_MySqlInitialCreate")]
-    partial class MySqlInitialCreate
+    [Migration("20190205131713_SqLiteInitial")]
+    partial class SqLiteInitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
 
             modelBuilder.Entity("SocialApp.API.Models.Like", b =>
                 {
