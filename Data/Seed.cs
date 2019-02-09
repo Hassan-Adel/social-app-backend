@@ -1,40 +1,33 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
 using SocialApp.API.Models;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace SocialApp.API.Data
 {
     public class Seed
     {
-        private readonly ApplicationDBContext _context;
-        public Seed(ApplicationDBContext context)
+        private UserManager<User> _userManager;
+
+        public Seed(UserManager<User> userManager)
         {
-            _context = context;
+            _userManager = userManager;
         }
 
+        // Will not declare as async void because that'll causee issues with SQL
         public void SeedUsers()
         {
-            var userData = File.ReadAllText("Data/UserSeedData.json");
-            var users = JsonConvert.DeserializeObject<List<User>>(userData);
-            foreach (var user in users)
+            if (!_userManager.Users.Any())
             {
-                byte[] passwordHash, passwordSalt;
-                CreatePasswordHash("password", out passwordHash, out passwordSalt);
-                //user.PasswordHash = passwordHash;
-                //user.PasswordSalt = passwordSalt;
-                user.UserName = user.UserName.ToLower();
-                _context.Users.Add(user);
-            }
-            _context.SaveChanges();
-        }
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                var userData = File.ReadAllText("Data/UserSeedData.json");
+                var users = JsonConvert.DeserializeObject<List<User>>(userData);
+                foreach (var user in users)
+                {
+                    _userManager.CreateAsync(user, "password").Wait();
+                }
             }
         }
     }
