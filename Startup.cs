@@ -120,7 +120,6 @@ namespace SocialApp.API
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 });
 
-            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<ISocialRepository, SocialRepository>();
             services.AddCors();
             //Getthe section cloudinary settings and now the values for the properties
