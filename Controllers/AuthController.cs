@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,13 +23,15 @@ namespace SocialApp.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthRepository _repo;
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
 
-        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
+        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration config, IMapper mapper)
         {
-            _repo = repo;
+            _signInManager = signInManager;
+            _userManager = userManager;
             _config = config;
             _mapper = mapper;
         }
@@ -43,7 +46,7 @@ namespace SocialApp.API.Controllers
 
             userForRegisterDTO.Username = userForRegisterDTO.Username.ToLower();
 
-            if (await _repo.UserExists(userForRegisterDTO.Username))
+            if (await _userManager.UserExists(userForRegisterDTO.Username))
                 return BadRequest("Username already exists");
 
             var userToCreate = _mapper.Map<User>(userForRegisterDTO);
@@ -63,15 +66,35 @@ namespace SocialApp.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userFromRepo = await _repo.Login(userForLoginDTO.Username.ToLower(), userForLoginDTO.Password);
+            var user = await _userManager.FindByNameAsync(userForLoginDTO.Username);
 
-            if (userFromRepo == null)
+            if (user == null)
                 return Unauthorized();
 
+            var result = await _signInManager.CheckPasswordSignInAsync(user, userForLoginDTO.Password, false);
+
+            if (result.Succeeded)
+            {
+                var appUser = await _userManager.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.NormalizedUserName == userForLoginDTO.Username.ToUpper());
+                // Send back some of the user properties that will be saved in the local storage & used by the SPA
+                var userToReturn = _mapper.Map<UserForLocalStorageDTO>(appUser);
+
+                return Ok(new
+                {
+                    token = GenerateJwtToken(appUser),
+                    user = userToReturn
+                });
+            }
+
+            return Unauthorized();
+        }
+
+        private string GenerateJwtToken(User user)
+        {
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                new Claim(ClaimTypes.Name, userFromRepo.UserName)
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
@@ -88,14 +111,9 @@ namespace SocialApp.API.Controllers
             var toKenHandler = new JwtSecurityTokenHandler();
 
             var token = toKenHandler.CreateToken(tokenDescriptor);
-            // Send back some of the user properties that will be saved in the local storage & used by the SPA
-            var user = _mapper.Map<UserForLocalStorageDTO>(userFromRepo);
-            return Ok(new {
-                token = toKenHandler.WriteToken(token),
-                user
-            });
-        }
 
+            return toKenHandler.WriteToken(token);
+        }
         // POST api/values
         [HttpPost]
         public void Post([FromBody] string value)
