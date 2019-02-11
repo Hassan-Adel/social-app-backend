@@ -107,6 +107,13 @@ namespace SocialApp.API
                     };
                 });
 
+            //Add Policy Auth
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
+                options.AddPolicy("VipOnly", policy => policy.RequireRole("VIP"));
+            });
             //this is going to require authentication globally
             //it means I can remove all of the authorize attributes from the controllers.
             services.AddMvc(options =>
